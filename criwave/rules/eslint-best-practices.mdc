@@ -1,0 +1,9 @@
+---
+description: Best practices for maintaining code quality with ESLint in JavaScript/TypeScript projects
+globs: **/*.{js,ts,vue}
+---
+- Configure ESLint to enforce consistent coding style across the project for better maintainability
+- Use ESLint plugins specific to your tech stack (e.g., vue, typescript) to catch framework-specific issues
+- Implement custom rules for project-specific requirements to ensure adaptability to your project's needs
+- Regularly update ESLint configuration to align with best practices and improve code quality over time
+- Use ESLint fix command to automatically fix minor issues and improve development efficiency

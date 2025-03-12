@@ -1,0 +1,74 @@
+/* Estilos responsivos para la aplicación */
+
+/* Variables para breakpoints */
+:root {
+  --breakpoint-xs: 0;
+  --breakpoint-sm: 576px;
+  --breakpoint-md: 768px;
+  --breakpoint-lg: 992px;
+  --breakpoint-xl: 1200px;
+}
+
+/* Base: Mobile First */
+html {
+  font-size: 16px; /* Base font size */
+}
+
+/* Clases de utilidad responsive */
+.hide-on-mobile {
+  display: none;
+}
+
+.show-on-mobile {
+  display: block;
+}
+
+/* Tablet (sm) */
+@media (min-width: 576px) {
+  .container {
+    max-width: 540px;
+  }
+  
+  /* Ajustes específicos para tablet */
+  .hide-on-mobile {
+    display: block;
+  }
+  
+  .show-on-mobile {
+    display: none;
+  }
+  
+  .hide-on-tablet {
+    display: none;
+  }
+}
+
+/* Desktop (md) */
+@media (min-width: 768px) {
+  .container {
+    max-width: 720px;
+  }
+  
+  /* Ajustes específicos para desktop */
+  .hide-on-desktop {
+    display: none;
+  }
+}
+
+/* Large Desktop (lg) */
+@media (min-width: 992px) {
+  .container {
+    max-width: 960px;
+  }
+  
+  /* Ajustes específicos para pantallas grandes */
+}
+
+/* Extra Large Desktop (xl) */
+@media (min-width: 1200px) {
+  .container {
+    max-width: 1140px;
+  }
+  
+  /* Ajustes específicos para pantallas muy grandes */
+} 

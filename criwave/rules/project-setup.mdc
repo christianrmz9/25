@@ -1,0 +1,9 @@
+---
+description:  Initial project setup and configuration guidelines
+globs: **/*.{js,ts,vue}
+---
+- Establecer la estructura base del proyecto siguiendo patrones de diseño modernos
+- Configurar herramientas de desarrollo y dependencias esenciales
+- Implementar sistema de control de versiones con convenciones de commits
+- Definir flujos de trabajo de CI/CD
+- Establecer documentación base del proyecto

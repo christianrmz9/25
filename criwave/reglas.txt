@@ -1,0 +1,8 @@
+tambien quiero que recuerdes que va a manejarse en light y 
+dark mode con los 6 colores que ya te pase,
+ que hagas comentarios en el codigo para que despues sea facil mantenerlo, 
+ quiero que utilices las reglas que previamente ya revisaste, 
+ y que los componentes tengas su lugar para ser llamados con facilidad y que mantengan un orden
+  y por ultimo quiero que sea flexible y se pueda ver en celular perfectamente 
+  y se adapte a cualquier tamaño de pantalla tanto de celular como de computadora, 
+  esto es muy importante 

@@ -1,0 +1,9 @@
+---
+description: Best practices for Vue.js applications and component design
+globs: **/*.{vue,js,ts}
+---
+- Use single-file components (.vue files) for better organization and performance
+- Implement proper prop validation and default values to enhance component reusability
+- Utilize Vue's reactivity system effectively with computed properties and watchers for optimal performance
+- Use v-if for conditional rendering when elements may be removed, and v-show for toggling visibility to improve performance
+- Implement proper error handling with try-catch blocks in methods to prevent app crashes

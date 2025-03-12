@@ -1,0 +1,10 @@
+---
+description: Best practices for using Vuetify UI components in Vue applications
+globs: **/*.{vue,js,ts}
+---
+
+- Use Vuetify's grid system for responsive layouts that adapt to any screen, device, and size
+- Customize themes using Vuetify's theme system to create a consistent and adaptable design
+- Implement proper accessibility features provided by Vuetify to ensure usability across different devices
+- Use Vuetify's built-in validation for forms to improve user experience and data integrity
+- Optimize performance by lazy-loading components to reduce initial load time and improve adaptability

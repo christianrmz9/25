@@ -1,0 +1,11 @@
+---
+description: Project context and environment-specific rules
+globs: **/*.{vue,js,ts}
+---
+- Define environment-specific configurations and variables
+- Implement proper error handling strategies based on environment
+- Configure logging levels and methods according to context
+- Set up appropriate security measures for each environment
+- Establish deployment procedures for different contexts
+
+---

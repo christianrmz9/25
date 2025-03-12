@@ -1,0 +1,9 @@
+---
+description: Best practices for state management in Vue 
+globs: **/*.{js,ts}
+---
+- Keep the state as simple as possible to improve performance and maintainability
+- Use mutations for synchronous operations and actions for asynchronous ones to maintain predictable state changes
+- Implement proper namespacing for modules in larger applications to avoid naming conflicts
+- Use getters for computed state to optimize performance by caching derived state
+- Avoid direct state mutations outside of mutations to maintain a single source of truth

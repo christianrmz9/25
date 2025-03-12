@@ -1,0 +1,66 @@
+/* Archivo de variables de temas para la aplicación */
+:root {
+  /* Modo claro */
+  --bg-primary: #e6e6e7;     /* Fondo principal */
+  --bg-secondary: #ffffff;   /* Fondo de tarjetas/elementos */
+  --text-primary: #000000;   /* Texto principal */
+  --text-secondary: #252626; /* Texto secundario */
+  --accent: #091306;         /* Color de acento */
+  --border: #7d8298;         /* Bordes y separadores */
+  
+  /* Variables adicionales */
+  --success: #00A389;
+  --warning: #FFB020;
+  --error: #D14343;
+  
+  /* Variables para efectos 3D */
+  --card-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  --card-hover-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+
+  /* Variables específicas para componentes */
+  --header-bg: var(--bg-secondary);
+  --header-text: var(--text-primary);
+  --header-border: transparent; /* Borde transparente para el header */
+  
+  /* Variables para el buscador en modo claro */
+  --search-bg: #f2f2f2;
+  --search-text: #333333;
+  --search-placeholder: #999999;
+  
+  --sidebar-bg: var(--bg-secondary);
+  --sidebar-text: var(--text-primary);
+  --sidebar-active: var(--accent);
+}
+
+html[data-theme="dark"] {
+  /* Modo oscuro */
+  --bg-primary: #121212;     /* Fondo principal - Ahora más oscuro */
+  --bg-secondary: #000000;   /* Fondo de tarjetas/elementos */
+  --text-primary: #ffffff;   /* Texto principal */
+  --text-secondary: #e6e6e7; /* Texto secundario */
+  --accent: #091306;         /* Color de acento */
+  --border: #7d8298;         /* Bordes y separadores */
+  
+  /* Ajustes para modo oscuro */
+  --card-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+  --card-hover-shadow: 0 4px 12px rgba(0, 0, 0, 0.7);
+
+  /* Variables específicas para componentes en modo oscuro */
+  --header-bg: var(--bg-secondary);
+  --header-text: var(--text-primary);
+  --header-border: transparent; /* Borde transparente para el header */
+  
+  /* Variables para el buscador en modo oscuro */
+  --search-bg: rgba(30, 30, 30, 0.95);
+  --search-text: #ffffff;
+  --search-placeholder: rgba(255, 255, 255, 0.5);
+  
+  --sidebar-bg: var(--bg-secondary);
+  --sidebar-text: var(--text-primary);
+  --sidebar-active: var(--accent);
+}
+
+/* Transiciones suaves entre temas */
+* {
+  transition: background-color 0.3s, color 0.3s, border-color 0.3s, box-shadow 0.3s;
+} 

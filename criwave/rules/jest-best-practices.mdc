@@ -1,0 +1,9 @@
+---
+description: Best practices for unit testing Vue applications with Jest
+globs: **/*.{js,ts}
+---
+- Write tests for all components and utility functions to ensure comprehensive coverage
+- Use shallow mounting for isolating component tests to improve test performance
+- Mock external dependencies and APIs to create reliable and adaptable tests
+- Implement snapshot testing for UI components to detect unintended UI changes across different devices
+- Use code coverage reports to identify untested areas and improve overall test quality

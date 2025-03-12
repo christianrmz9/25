@@ -1,0 +1,9 @@
+---
+description: Best practices for routing in Vue applications 
+globs: **/*.{js,ts}
+---
+- Use named routes for better maintainability and easier navigation
+- Implement route-level code-splitting to improve initial load time and overall performance
+- Use navigation guards for authentication and authorization to enhance security
+- Keep route configurations separate from component logic for better separation of concerns
+- Use params and query for dynamic routing to create flexible and adaptable routes
