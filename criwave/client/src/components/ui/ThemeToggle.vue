@@ -56,40 +56,33 @@
  * @example
  * <theme-toggle />
  */
-import { useThemeStore } from '../../store/theme';
+import { computed } from 'vue';
+import { useStore } from 'vuex';
 
 export default {
   name: 'ThemeToggle',
   
-  data() {
-    return {
-      themeStore: useThemeStore
-    };
-  },
-  
-  computed: {
-    /**
-     * Determina si el tema actual es oscuro
-     */
-    isDark() {
-      return this.themeStore.getters.isDark();
-    },
+  setup() {
+    const store = useStore();
     
-    /**
-     * Texto accesible para el botón
-     */
-    buttonLabel() {
-      return this.isDark ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro';
-    }
-  },
-  
-  methods: {
-    /**
-     * Método para alternar el tema
-     */
-    toggleTheme() {
-      this.themeStore.actions.toggleTheme();
-    }
+    // Determina si el tema actual es oscuro
+    const isDark = computed(() => store.getters['theme/isDark']);
+    
+    // Texto accesible para el botón
+    const buttonLabel = computed(() => 
+      isDark.value ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro'
+    );
+    
+    // Método para alternar el tema
+    const toggleTheme = () => {
+      store.dispatch('theme/toggleTheme');
+    };
+    
+    return {
+      isDark,
+      buttonLabel,
+      toggleTheme
+    };
   }
 };
 </script>

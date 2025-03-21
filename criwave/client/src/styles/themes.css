@@ -20,7 +20,7 @@
   /* Variables específicas para componentes */
   --header-bg: var(--bg-secondary);
   --header-text: var(--text-primary);
-  --header-border: transparent; /* Borde transparente para el header */
+  --header-border: transparent; /* Borde transparente para el header en modo claro */
   
   /* Variables para el buscador en modo claro */
   --search-bg: #f2f2f2;
@@ -30,6 +30,18 @@
   --sidebar-bg: var(--bg-secondary);
   --sidebar-text: var(--text-primary);
   --sidebar-active: var(--accent);
+  
+  /* Variables para barras de desplazamiento en modo claro */
+  --scrollbar-track: rgba(0, 0, 0, 0.05);
+  --scrollbar-thumb: rgba(0, 0, 0, 0.2);
+  --scrollbar-thumb-hover: rgba(0, 0, 0, 0.3);
+  
+  /* Variables para el menú de usuario en modo claro */
+  --user-menu-bg: var(--bg-secondary);
+  --user-menu-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  --user-menu-border: rgba(0, 0, 0, 0.1);
+  --user-avatar-bg: var(--accent);
+  --user-avatar-text: #ffffff;
 }
 
 html[data-theme="dark"] {
@@ -58,6 +70,18 @@ html[data-theme="dark"] {
   --sidebar-bg: var(--bg-secondary);
   --sidebar-text: var(--text-primary);
   --sidebar-active: var(--accent);
+  
+  /* Variables para barras de desplazamiento en modo oscuro */
+  --scrollbar-track: rgba(0, 0, 0, 0.5);
+  --scrollbar-thumb: rgba(255, 255, 255, 0.2);
+  --scrollbar-thumb-hover: rgba(255, 255, 255, 0.3);
+  
+  /* Variables para el menú de usuario en modo oscuro */
+  --user-menu-bg: #121212;
+  --user-menu-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+  --user-menu-border: rgba(255, 255, 255, 0.1);
+  --user-avatar-bg: var(--accent);
+  --user-avatar-text: #ffffff;
 }
 
 /* Transiciones suaves entre temas */

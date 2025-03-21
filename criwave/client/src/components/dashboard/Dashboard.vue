@@ -1,8 +1,7 @@
 <template>
   <div class="dashboard-container">
     <div class="dashboard-header">
-      <h1 class="welcome-title">Bienvenido al Dashboard</h1>
-      <p class="welcome-subtitle">Resumen de ventas y métricas clave</p>
+      <!-- Título y subtítulo eliminados -->
     </div>
     
     <div class="sales-cards">
@@ -39,6 +38,20 @@
         comparison-period="mes anterior"
       />
     </div>
+    
+    <!-- Gráfico de ingresos de los últimos 12 meses -->
+    <div class="revenue-chart-section">
+      <revenue-chart
+        :revenue-data="revenueData"
+        :historical-data="historicalRevenueData"
+        :change-percent="revenueChangePercent"
+        :change-amount="revenueChangeAmount"
+        :auto-generate-historical="true"
+        :default-show-comparison="showRevenueComparison"
+        @comparison-changed="showRevenueComparison = $event"
+        class="dashboard-item revenue-chart"
+      />
+    </div>
   </div>
 </template>
 
@@ -52,14 +65,17 @@
  * @component AppDashboard
  */
 import SalesCard from './SalesCard.vue';
-// Importar el servicio de dashboard en lugar de los datos directamente
+import RevenueChart from './RevenueChart.vue';
+// Importar los servicios
 import { getDailySales, getWeeklySales, getMonthlySales } from '../../services/dashboardService';
+import revenueService from '../../services/revenueService';
 
 export default {
   name: 'AppDashboard',
   
   components: {
-    SalesCard
+    SalesCard,
+    RevenueChart
   },
   
   data() {
@@ -88,30 +104,16 @@ export default {
         change: 0,
         changeAmount: 0
       },
+      // Datos para el gráfico de ingresos
+      revenueData: [],
+      historicalRevenueData: [],
+      revenueChangePercent: 0,
+      revenueChangeAmount: 0,
+      isLoadingRevenue: false,
+      showRevenueComparison: false,
       isLoading: true,
       error: null
     };
-  },
-  
-  computed: {
-    /**
-     * Genera un mensaje de bienvenida personalizado según la hora del día
-     */
-    welcomeMessage() {
-      const hour = new Date().getHours();
-      let greeting = '';
-      
-      if (hour < 12) {
-        greeting = 'Buenos días';
-      } else if (hour < 18) {
-        greeting = 'Buenas tardes';
-      } else {
-        greeting = 'Buenas noches';
-      }
-      
-      // Aquí se podría añadir el nombre del usuario cuando haya sistema de autenticación
-      return `${greeting}, Usuario`;
-    }
   },
   
   methods: {
@@ -155,13 +157,29 @@ export default {
           changeAmount: monthlyData.changeAmount
         };
         
-        // Aquí se pueden cargar más datos según sea necesario
-        
         this.isLoading = false;
       } catch (error) {
         console.error('Error al cargar datos del dashboard:', error);
         this.error = 'No se pudieron cargar los datos. Por favor, intenta de nuevo más tarde.';
         this.isLoading = false;
+      }
+    },
+
+    async loadRevenueData() {
+      this.isLoadingRevenue = true;
+      try {
+        const { current, historical, changePercent, changeAmount } = await revenueService.getRevenueData({
+          includeHistorical: true
+        });
+        
+        this.revenueData = current;
+        this.historicalRevenueData = historical;
+        this.revenueChangePercent = changePercent;
+        this.revenueChangeAmount = changeAmount;
+      } catch (error) {
+        console.error('Error al cargar los datos de ingresos:', error);
+      } finally {
+        this.isLoadingRevenue = false;
       }
     }
   },
@@ -169,6 +187,7 @@ export default {
   mounted() {
     // Cargar datos al montar el componente
     this.loadDashboardData();
+    this.loadRevenueData();
   }
 };
 </script>
@@ -177,39 +196,27 @@ export default {
 /* Estilos del dashboard */
 .dashboard-container {
   width: 100%;
-  padding: 10px 0;
+  padding: 5px 0;
 }
 
 /* Estilos del encabezado */
 .dashboard-header {
-  margin-bottom: 24px;
-}
-
-.welcome-title {
-  font-size: 1.8rem;
-  font-weight: 600;
-  color: var(--text-primary);
-  margin: 0 0 8px 0;
-  /* Añadir efecto de texto 3D sutil */
-  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.1);
-  opacity: 0.95; /* Alta importancia pero no distrae de los datos */
-}
-
-.welcome-subtitle {
-  font-size: 1rem;
-  color: var(--text-secondary);
-  margin: 0;
-  opacity: 0.75; /* Menos prominente que el título */
+  margin-bottom: 5px;
 }
 
 /* Contenedor de tarjetas */
 .sales-cards {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-  gap: 30px;
-  margin-bottom: 40px;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 20px;
+  margin-bottom: 30px;
   /* Añadir perspectiva para mejorar el efecto 3D */
   perspective: 1000px;
+}
+
+/* Sección de gráfico de ingresos */
+.revenue-chart-section {
+  margin-bottom: 30px;
 }
 
 /* Estado de carga */
@@ -258,20 +265,12 @@ export default {
 /* Ajustes responsive */
 @media (max-width: 768px) {
   .dashboard-container {
-    padding: 5px 0;
-  }
-  
-  .welcome-title {
-    font-size: 1.5rem;
-  }
-  
-  .welcome-subtitle {
-    font-size: 0.9rem;
+    padding: 3px 0;
   }
   
   .sales-cards {
     grid-template-columns: 1fr;
-    gap: 24px;
+    gap: 18px;
     /* Mantener la perspectiva en móviles */
     perspective: 800px;
   }

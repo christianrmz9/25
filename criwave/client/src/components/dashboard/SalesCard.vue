@@ -21,7 +21,7 @@
             <span v-else-if="change < 0">▼</span>
           </div>
           <div class="change-values">
-            <span class="change-percentage">{{ Math.abs(change) }}%</span>
+            <span class="change-percentage">{{ formattedPercentage }}%</span>
             <span class="change-amount">${{ formattedChangeAmount }}</span>
           </div>
         </div>
@@ -34,7 +34,7 @@
     <div class="card-metrics">
       <div class="metric">
         <span class="metric-label">Ventas</span>
-        <span class="metric-value">{{ count }}</span>
+        <span class="metric-value">{{ formattedCount }}</span>
       </div>
       
       <div class="metric">
@@ -139,33 +139,39 @@ export default {
   
   computed: {
     /**
-     * Formatea el monto con separadores de miles
+     * Formatea el monto con comas para miles y puntos para decimales
      */
     formattedAmount() {
       if (this.amount === undefined || this.amount === null) {
         return '0.00';
       }
-      return this.amount.toLocaleString('es', {
+      
+      // Formatear con comas para miles y puntos para decimales
+      return new Intl.NumberFormat('es-ES', {
         minimumFractionDigits: 2,
-        maximumFractionDigits: 2
-      });
+        maximumFractionDigits: 2,
+        useGrouping: true
+      }).format(this.amount).replace(/\./g, 'X').replace(/,/g, '.').replace(/X/g, ',');
     },
     
     /**
-     * Formatea el promedio con separadores de miles
+     * Formatea el promedio con comas para miles y puntos para decimales
      */
     formattedAverage() {
       if (this.average === undefined || this.average === null) {
         return '0.00';
       }
-      return this.average.toLocaleString('es', {
+      
+      // Formatear con comas para miles y puntos para decimales
+      return new Intl.NumberFormat('es-ES', {
         minimumFractionDigits: 2,
-        maximumFractionDigits: 2
-      });
+        maximumFractionDigits: 2,
+        useGrouping: true
+      }).format(this.average).replace(/\./g, 'X').replace(/,/g, '.').replace(/X/g, ',');
     },
     
     /**
-     * Formatea el monto de cambio con separadores de miles
+     * Formatea el monto de cambio con comas para miles y puntos para decimales
      */
     formattedChangeAmount() {
       // Si no se proporciona changeAmount, calcularlo aproximadamente basado en el porcentaje
@@ -173,17 +179,20 @@ export default {
         if (this.amount === undefined || this.amount === null || this.change === undefined || this.change === null) {
           return '0.00';
         }
-        const amountToFormat = (this.amount * this.change / 100);
-        return Math.abs(amountToFormat).toLocaleString('es', {
+        const amountToFormat = Math.abs(this.amount * this.change / 100);
+        return new Intl.NumberFormat('es-ES', {
           minimumFractionDigits: 2,
-          maximumFractionDigits: 2
-        });
+          maximumFractionDigits: 2,
+          useGrouping: true
+        }).format(amountToFormat).replace(/\./g, 'X').replace(/,/g, '.').replace(/X/g, ',');
       }
       
-      return Math.abs(this.changeAmount).toLocaleString('es', {
+      const amountToFormat = Math.abs(this.changeAmount);
+      return new Intl.NumberFormat('es-ES', {
         minimumFractionDigits: 2,
-        maximumFractionDigits: 2
-      });
+        maximumFractionDigits: 2,
+        useGrouping: true
+      }).format(amountToFormat).replace(/\./g, 'X').replace(/,/g, '.').replace(/X/g, ',');
     },
     
     /**
@@ -195,6 +204,37 @@ export default {
         'negative': this.change < 0,
         'neutral': this.change === 0
       };
+    },
+    
+    /**
+     * Formatea el porcentaje de cambio con punto como separador decimal
+     */
+    formattedPercentage() {
+      if (this.change === undefined || this.change === null) {
+        return '0.0';
+      }
+      
+      // Formatear con un máximo de 1 decimal y punto como separador decimal
+      return Math.abs(this.change).toFixed(1);
+    },
+    
+    /**
+     * Formatea el número de ventas con comas como separadores de miles
+     */
+    formattedCount() {
+      if (this.count === undefined || this.count === null) {
+        return '0';
+      }
+      
+      // Si es un número pequeño (menos de 1000), devolverlo sin formatear
+      if (this.count < 1000) {
+        return this.count.toString();
+      }
+      
+      // Para números grandes, usar separadores de miles
+      return new Intl.NumberFormat('es-ES', {
+        useGrouping: true
+      }).format(this.count).replace(/\./g, ',');
     }
   }
 };
@@ -204,15 +244,14 @@ export default {
 /* Estilos de la tarjeta con efecto 3D */
 .sales-card {
   background-color: var(--bg-secondary);
-  border-radius: 12px;
-  padding: 20px;
+  border-radius: 10px;
+  padding: 14px;
   /* Efecto 3D con múltiples sombras */
   box-shadow: 
     0 2px 4px rgba(0, 0, 0, 0.05),
     0 4px 8px rgba(0, 0, 0, 0.05),
-    0 8px 16px rgba(0, 0, 0, 0.05),
-    inset 0 -2px 0 rgba(0, 0, 0, 0.1),
-    inset 0 2px 0 rgba(255, 255, 255, 0.1);
+    inset 0 -1px 0 rgba(0, 0, 0, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
   /* Borde con gradiente para efecto 3D */
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-bottom: 1px solid rgba(0, 0, 0, 0.1);
@@ -223,7 +262,7 @@ export default {
   position: relative;
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 12px;
   /* Efecto de brillo en el borde superior */
   background-image: linear-gradient(
     to bottom,
@@ -300,7 +339,7 @@ export default {
 }
 
 .card-title {
-  font-size: 1.2rem;
+  font-size: 1rem;
   font-weight: 600;
   color: var(--text-primary);
   margin: 0;
@@ -313,9 +352,11 @@ export default {
 .card-content {
   display: flex;
   justify-content: space-between;
-  align-items: flex-start;
+  align-items: center;
   position: relative;
   z-index: 1;
+  margin-top: -2px;
+  margin-bottom: -2px;
 }
 
 .amount-container {
@@ -324,7 +365,7 @@ export default {
 }
 
 .amount-prefix {
-  font-size: 1.2rem;
+  font-size: 1rem;
   font-weight: 500;
   color: var(--text-primary);
   margin-right: 4px;
@@ -334,7 +375,7 @@ export default {
 }
 
 .amount {
-  font-size: 2rem;
+  font-size: 1.7rem;
   font-weight: 700;
   color: var(--text-primary);
   /* Efecto de texto 3D más pronunciado */
@@ -349,14 +390,15 @@ export default {
   display: flex;
   flex-direction: column;
   align-items: flex-end;
+  min-width: 92px;
 }
 
 /* Indicador de cambio */
 .change-indicator {
   display: flex;
   align-items: center;
-  padding: 6px 10px;
-  border-radius: 16px;
+  padding: 3px 6px;
+  border-radius: 10px;
   font-weight: 600;
   /* Efecto 3D para el indicador */
   box-shadow: 
@@ -369,7 +411,8 @@ export default {
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-right: 6px;
+  margin-right: 4px;
+  font-size: 0.8rem;
 }
 
 /* Contenedor para los valores de cambio */
@@ -377,12 +420,12 @@ export default {
   display: flex;
   flex-direction: column;
   align-items: center;
-  min-width: 60px; /* Ancho mínimo para asegurar centrado consistente */
+  min-width: 50px; /* Ancho mínimo para asegurar centrado consistente */
 }
 
 /* Porcentaje de cambio */
 .change-percentage {
-  font-size: 1rem;
+  font-size: 0.9rem;
   font-weight: 700;
   line-height: 1.2;
   /* El color se hereda de la clase .positive o .negative */
@@ -391,15 +434,15 @@ export default {
 
 /* Cantidad de cambio */
 .change-amount {
-  font-size: 0.85rem;
+  font-size: 0.75rem;
   opacity: 0.85; /* Ligeramente menos prominente que el porcentaje */
 }
 
 /* Etiqueta de período de comparación */
 .comparison-period {
-  font-size: 0.85rem;
+  font-size: 0.75rem;
   color: var(--text-secondary);
-  margin-top: 6px;
+  margin-top: 4px;
   font-weight: 500;
   opacity: 0.75; /* Menos prominente que los valores de cambio */
 }
@@ -445,11 +488,11 @@ export default {
 .card-metrics {
   display: flex;
   justify-content: space-between;
-  padding-top: 12px;
+  padding-top: 8px;
   /* Borde con efecto 3D */
   border-top: 1px solid rgba(125, 130, 152, 0.1);
   position: relative;
-  margin-bottom: 0; /* Eliminar margen inferior ya que no hay botón de acción */
+  margin-top: 2px;
 }
 
 /* Efecto de sombra en el borde superior */
@@ -474,14 +517,14 @@ export default {
 }
 
 .metric-label {
-  font-size: 0.85rem;
+  font-size: 0.75rem;
   color: var(--text-secondary);
-  margin-bottom: 4px;
+  margin-bottom: 2px;
   opacity: 0.7; /* Menos prominente que la mayoría de los elementos */
 }
 
 .metric-value {
-  font-size: 1.1rem;
+  font-size: 0.95rem;
   font-weight: 600;
   color: var(--text-primary);
   /* Efecto de texto 3D sutil */
@@ -492,35 +535,35 @@ export default {
 /* Ajustes responsive */
 @media (max-width: 576px) {
   .sales-card {
-    padding: 16px;
+    padding: 12px;
   }
   
   .card-title {
-    font-size: 1.1rem;
+    font-size: 0.95rem;
   }
   
   .amount {
-    font-size: 1.8rem;
+    font-size: 1.5rem;
   }
   
   .amount-prefix {
-    font-size: 1.1rem;
+    font-size: 0.95rem;
   }
   
   .change-percentage {
-    font-size: 0.9rem;
+    font-size: 0.8rem;
   }
   
   .change-amount {
-    font-size: 0.8rem;
+    font-size: 0.7rem;
   }
   
   .comparison-period {
-    font-size: 0.8rem;
+    font-size: 0.7rem;
   }
   
   .metric-value {
-    font-size: 1rem;
+    font-size: 0.9rem;
   }
 }
 </style> 

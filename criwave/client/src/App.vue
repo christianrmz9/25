@@ -1,5 +1,8 @@
 <template>
-  <div class="app-container">
+  <div class="app-container" :class="{ 'sidebar-open': isSidebarOpen }">
+    <!-- Cargar Material Icons -->
+    <material-icons-loader />
+    
     <!-- Header -->
     <app-header @toggle-sidebar="toggleSidebar" />
     
@@ -28,7 +31,9 @@
 import AppHeader from './components/layout/AppHeader.vue';
 import AppSidebar from './components/layout/AppSidebar.vue';
 import AppDashboard from './components/dashboard/Dashboard.vue';
-import { useThemeStore } from './store/theme';
+import MaterialIconsLoader from './components/ui/MaterialIconsLoader.vue';
+import { onMounted, onBeforeUnmount, ref } from 'vue';
+import { useStore } from 'vuex';
 
 export default {
   name: 'App',
@@ -36,52 +41,48 @@ export default {
   components: {
     AppHeader,
     AppSidebar,
-    AppDashboard
+    AppDashboard,
+    MaterialIconsLoader
   },
   
-  data() {
-    return {
-      isSidebarOpen: false,
-      themeStore: useThemeStore
+  setup() {
+    const store = useStore();
+    const isSidebarOpen = ref(false);
+    
+    // Alterna la visibilidad del sidebar
+    const toggleSidebar = () => {
+      isSidebarOpen.value = !isSidebarOpen.value;
     };
-  },
-  
-  methods: {
-    /**
-     * Alterna la visibilidad del sidebar
-     */
-    toggleSidebar(isOpen) {
-      this.isSidebarOpen = isOpen !== undefined ? isOpen : !this.isSidebarOpen;
-    },
     
-    /**
-     * Cierra el sidebar
-     */
-    closeSidebar() {
-      this.isSidebarOpen = false;
-    }
-  },
-  
-  /**
-   * Inicializa el tema al montar el componente
-   */
-  mounted() {
-    // Inicializar el tema
-    this.themeStore.actions.initTheme();
+    // Cierra el sidebar
+    const closeSidebar = () => {
+      isSidebarOpen.value = false;
+    };
     
-    // Cerrar el sidebar al cambiar el tamaño de la ventana
-    window.addEventListener('resize', () => {
-      if (window.innerWidth > 768 && this.isSidebarOpen) {
-        this.closeSidebar();
+    // Maneja el cambio de tamaño de la ventana
+    const handleResize = () => {
+      if (window.innerWidth <= 768 && isSidebarOpen.value) {
+        closeSidebar();
       }
+    };
+    
+    onMounted(() => {
+      // Inicializar el tema
+      store.dispatch('theme/initTheme');
+      
+      // Cerrar el sidebar al cambiar el tamaño de la ventana
+      window.addEventListener('resize', handleResize);
     });
-  },
-  
-  /**
-   * Limpia los event listeners al desmontar el componente
-   */
-  beforeUnmount() {
-    window.removeEventListener('resize', this.handleResize);
+    
+    onBeforeUnmount(() => {
+      window.removeEventListener('resize', handleResize);
+    });
+    
+    return {
+      isSidebarOpen,
+      toggleSidebar,
+      closeSidebar
+    };
   }
 };
 </script>
@@ -92,7 +93,16 @@ export default {
   min-height: 100vh;
   background-color: var(--bg-primary);
   color: var(--text-primary);
-  overflow: hidden; /* Evita desbordamientos que puedan causar bordes no deseados */
+  display: flex;
+  flex-direction: column;
+  transition: padding-left 0.3s ease;
+}
+
+/* Cuando el sidebar está abierto en pantallas grandes */
+@media (min-width: 769px) {
+  .app-container.sidebar-open {
+    padding-left: 280px; /* Ancho del sidebar */
+  }
 }
 
 /* Contenedor principal */
@@ -107,6 +117,7 @@ export default {
 .main-content {
   padding-top: 70px; /* Espacio para el header */
   min-height: calc(100vh - 70px);
+  flex: 1;
 }
 
 /* Asegurarse de que no haya márgenes o bordes no deseados */

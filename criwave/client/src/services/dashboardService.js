@@ -6,6 +6,101 @@
  * diseñado para facilitar la transición a una API real en el futuro.
  */
 
+import apiService from './apiService';
+import mockApi from './mockApi';
+
+// Determinar si estamos en modo desarrollo
+const isDevelopment = process.env.NODE_ENV === 'development';
+
+// Estado para almacenar datos en caché
+const cache = {
+  dashboardData: null,
+  lastFetched: null,
+  cacheTime: 5 * 60 * 1000 // 5 minutos (en milisegundos)
+};
+
+/**
+ * Servicio para obtener y gestionar datos del dashboard
+ */
+export default {
+  /**
+   * Obtener todos los datos del dashboard en una sola llamada
+   * Implementa caché para evitar llamadas innecesarias
+   */
+  async getDashboardData() {
+    // Usar caché si los datos son recientes
+    if (cache.dashboardData && 
+        cache.lastFetched && 
+        (Date.now() - cache.lastFetched) < cache.cacheTime) {
+      console.log('Usando datos en caché del dashboard');
+      return Promise.resolve(cache.dashboardData);
+    }
+    
+    try {
+      let response;
+      
+      // Usar API mock en desarrollo
+      if (isDevelopment) {
+        console.log('Usando API mock para datos del dashboard');
+        response = await mockApi.getDashboardOverview();
+      } else {
+        // Usar API real en producción
+        response = await apiService.get('/dashboard/overview');
+      }
+      
+      // Guardar en caché
+      cache.dashboardData = response.data;
+      cache.lastFetched = Date.now();
+      
+      return response.data;
+    } catch (error) {
+      console.error('Error cargando datos del dashboard:', error);
+      throw error;
+    }
+  },
+
+  /**
+   * Forzar recarga de datos (ignorar caché)
+   */
+  async refreshDashboardData() {
+    try {
+      let response;
+      
+      // Usar API mock en desarrollo
+      if (isDevelopment) {
+        response = await mockApi.getDashboardOverview();
+      } else {
+        // Usar API real en producción
+        response = await apiService.get('/dashboard/overview');
+      }
+      
+      // Actualizar caché
+      cache.dashboardData = response.data;
+      cache.lastFetched = Date.now();
+      
+      return response.data;
+    } catch (error) {
+      console.error('Error actualizando datos del dashboard:', error);
+      throw error;
+    }
+  },
+
+  /**
+   * Obtener una sección específica de datos
+   * @param {string} section - Nombre de la sección (ej: 'ventas', 'usuarios')
+   */
+  async getSectionData(section) {
+    try {
+      // Intentar obtener del caché primero
+      const allData = await this.getDashboardData();
+      return allData[section] || null;
+    } catch (error) {
+      console.error(`Error obteniendo datos de la sección ${section}:`, error);
+      throw error;
+    }
+  }
+};
+
 // Importar datos de ejemplo
 import {
   dailySalesData,

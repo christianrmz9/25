@@ -2,24 +2,16 @@
   <header class="app-header">
     <div class="header-container">
       <div class="header-content">
-        <!-- Logo que activa el menú lateral -->
-        <button class="logo-button" @click="toggleSidebar" aria-label="Abrir menú lateral">
-          <img 
-            :src="logoSrc" 
-            alt="Logo CriWave" 
-            class="logo-image"
-          />
-        </button>
-        
-        <!-- Buscador -->
-        <div class="search-container">
-          <input 
-            type="text" 
-            class="search-input" 
-            placeholder="Buscar..." 
-            v-model="searchQuery"
-            @keyup.enter="handleSearch"
-          />
+        <!-- Grupo del logo -->
+        <div class="header-left">
+          <!-- Botón de menú con logo -->
+          <button class="menu-button" @click="toggleSidebar" aria-label="Abrir menú lateral">
+            <img 
+              :src="logoSrc" 
+              alt="Leadwave" 
+              class="logo-image"
+            />
+          </button>
         </div>
         
         <!-- Perfil de usuario y tema -->
@@ -37,16 +29,16 @@
             <!-- Menú desplegable del usuario (oculto por defecto) -->
             <div class="user-menu" v-if="isUserMenuOpen">
               <div class="menu-item">
-                <span class="menu-icon">👤</span>
+                <span class="menu-icon user-icon"></span>
                 <span>Perfil</span>
               </div>
               <div class="menu-item">
-                <span class="menu-icon">⚙️</span>
+                <span class="menu-icon settings-icon"></span>
                 <span>Configuración</span>
               </div>
               <div class="menu-divider"></div>
               <div class="menu-item">
-                <span class="menu-icon">🚪</span>
+                <span class="menu-icon logout-icon"></span>
                 <span>Cerrar sesión</span>
               </div>
             </div>
@@ -63,14 +55,15 @@
  * 
  * Incluye:
  * - Logo que activa el menú lateral
- * - Buscador
+ * - Título de la sección actual
  * - Botón de cambio de tema
  * - Perfil de usuario
  * 
  * @component AppHeader
  */
 import ThemeToggle from '../ui/ThemeToggle.vue';
-import { useThemeStore } from '../../store/theme';
+import { computed } from 'vue';
+import { useStore } from 'vuex';
 
 export default {
   name: 'AppHeader',
@@ -79,28 +72,28 @@ export default {
     ThemeToggle
   },
   
+  setup() {
+    const store = useStore();
+    
+    // Determina la imagen del logo según el tema actual
+    const logoSrc = computed(() => {
+      return store.getters['theme/isDark'] ? '/img/Wblanco.png' : '/img/Wnegro.png';
+    });
+    
+    return {
+      logoSrc
+    };
+  },
+  
   data() {
     return {
-      searchQuery: '',
       isUserMenuOpen: false,
-      isSidebarOpen: false,
-      themeStore: useThemeStore,
       // Datos de usuario de prueba
       userName: 'Christian R'
     };
   },
   
   computed: {
-    /**
-     * Determina la imagen del logo según el tema actual
-     */
-    logoSrc() {
-      // Usar logo blanco en modo oscuro y negro en modo claro
-      return this.themeStore.getters.isDark() 
-        ? '/img/Wblanco.png' 
-        : '/img/Wnegro.png';
-    },
-    
     /**
      * Obtiene la inicial del nombre de usuario para el avatar
      */
@@ -110,16 +103,6 @@ export default {
   },
   
   methods: {
-    /**
-     * Maneja la búsqueda cuando se presiona Enter
-     */
-    handleSearch() {
-      if (this.searchQuery.trim()) {
-        console.log('Buscando:', this.searchQuery);
-        // Aquí iría la lógica de búsqueda
-      }
-    },
-    
     /**
      * Alterna la visibilidad del menú de usuario
      */
@@ -131,9 +114,8 @@ export default {
      * Alterna la visibilidad del menú lateral
      */
     toggleSidebar() {
-      this.isSidebarOpen = !this.isSidebarOpen;
       // Emitir evento para que el componente padre pueda reaccionar
-      this.$emit('toggle-sidebar', this.isSidebarOpen);
+      this.$emit('toggle-sidebar');
     }
   },
   
@@ -149,7 +131,8 @@ export default {
   
   // Limpiar event listeners al destruir el componente
   beforeUnmount() {
-    document.removeEventListener('click', this.handleClickOutside);
+    // No hay un handler específico que quitar ya que usamos una función anónima
+    // en el addEventListener
   }
 };
 </script>
@@ -158,22 +141,20 @@ export default {
 /* Estilos del header */
 .app-header {
   background-color: var(--header-bg);
-  border-bottom: none; /* Eliminado el borde inferior */
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
-  height: 70px; /* Aumentado de 60px a 70px para dar más espacio vertical */
+  height: 56px; /* Altura ajustada como en la imagen */
   z-index: 1000;
-  box-shadow: none; /* Eliminada la sombra */
-  padding: 0; /* Sin padding en el header */
+  color: var(--header-text);
+  border-bottom: none; /* Eliminado el borde inferior */
+  box-shadow: var(--card-shadow);
 }
 
 .header-container {
   width: 100%;
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 0 10px 0 0; /* Solo padding derecho */
+  padding: 0 16px;
   height: 100%;
 }
 
@@ -184,64 +165,41 @@ export default {
   height: 100%;
 }
 
-/* Logo */
-.logo-button {
+/* Grupo izquierdo: logo */
+.header-left {
+  display: flex;
+  align-items: center;
+  flex: 1;
+  padding-left: 10px;
+}
+
+/* Botón de menú */
+.menu-button {
   background: none;
   border: none;
   cursor: pointer;
-  padding: 0 0 0 15px; /* Añadido padding izquierdo de 15px */
   display: flex;
   align-items: center;
+  justify-content: center;
   transition: transform 0.2s;
-  margin-right: 5px; /* Reducido margen derecho */
+  padding: 5px;
+  border-radius: 8px;
 }
 
-.logo-button:hover {
+.menu-button:hover {
   transform: scale(1.05);
+  background-color: rgba(0, 0, 0, 0.05);
 }
 
-.logo-button:active {
+.menu-button:active {
   transform: scale(0.95);
 }
 
 .logo-image {
-  height: 42px; /* Aumentado de 36px a 42px */
+  height: 42px; /* Aumentado significativamente */
   width: auto;
-}
-
-/* Buscador */
-.search-container {
-  flex: 1;
-  max-width: 200px;
-  margin: 0 20px;
-  position: relative;
-  display: flex;
-  align-items: center;
-  height: 36px;
-}
-
-.search-input {
-  width: 100%;
-  height: 36px;
-  padding: 0 12px;
-  border-radius: 4px;
-  border: 1px solid rgba(0, 0, 0, 0.05);
-  background-color: var(--search-bg);
-  color: var(--search-text);
-  font-size: 0.9rem;
-  transition: all 0.2s;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05) inset;
-}
-
-.search-input::placeholder {
-  color: var(--search-placeholder);
-  opacity: 1;
-}
-
-.search-input:focus {
-  outline: none;
-  border-color: var(--accent);
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1) inset;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+  transition: all 0.3s ease;
 }
 
 /* Perfil de usuario */
@@ -249,38 +207,39 @@ export default {
   display: flex;
   align-items: center;
   height: 100%;
-  padding: 0 5px; /* Añadido padding */
 }
 
 .user-profile {
   display: flex;
   align-items: center;
   cursor: pointer;
-  margin-left: 16px; /* Aumentado margen */
+  margin-left: 16px;
   position: relative;
-  height: 40px; /* Altura fija */
+  height: 40px;
 }
 
 .user-avatar {
-  width: 38px; /* Ligeramente más grande */
-  height: 38px; /* Ligeramente más grande */
+  width: 32px;
+  height: 32px;
   border-radius: 50%;
-  background-color: var(--accent);
+  background-color: var(--user-avatar-bg);
   display: flex;
   align-items: center;
   justify-content: center;
-  color: white;
-  font-weight: bold;
+  color: var(--user-avatar-text);
+  font-weight: 500;
 }
 
 .user-initial {
-  font-size: 1.2rem;
+  font-size: 0.9rem;
+  color: var(--user-avatar-text);
 }
 
 .user-name {
-  margin-left: 10px; /* Aumentado margen */
+  margin-left: 8px;
   font-weight: 500;
   color: var(--text-primary);
+  font-size: 0.9rem;
 }
 
 /* Menú desplegable del usuario */
@@ -289,29 +248,100 @@ export default {
   top: 100%;
   right: 0;
   margin-top: 8px; /* Ajustado margen */
-  background-color: var(--bg-secondary);
+  background-color: var(--user-menu-bg);
   border-radius: 8px; /* Bordes más redondeados */
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15); /* Sombra más pronunciada */
+  box-shadow: var(--user-menu-shadow); /* Sombra adaptativa */
   min-width: 200px; /* Ligeramente más ancho */
   z-index: 1000;
   overflow: hidden; /* Para que los bordes redondeados se apliquen a los items */
+  border: 1px solid var(--user-menu-border);
 }
 
 .menu-item {
-  padding: 12px 16px; /* Más padding */
+  padding: 12px 16px;
   color: var(--text-primary);
   transition: background-color 0.2s;
   display: flex;
   align-items: center;
 }
 
+/* Iconos del menú de usuario */
 .menu-icon {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
   margin-right: 10px;
+  position: relative;
   opacity: 0.8;
 }
 
+.user-icon::before {
+  content: '';
+  position: absolute;
+  top: 3px;
+  left: 5px;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: currentColor;
+}
+
+.user-icon::after {
+  content: '';
+  position: absolute;
+  top: 11px;
+  left: 2px;
+  width: 12px;
+  height: 6px;
+  border-radius: 6px 6px 0 0;
+  background-color: currentColor;
+}
+
+.settings-icon::before,
+.settings-icon::after {
+  content: '';
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  top: 2px;
+  left: 2px;
+  border-radius: 50%;
+  border: 1px solid currentColor;
+}
+
+.settings-icon::after {
+  width: 6px;
+  height: 6px;
+  top: 5px;
+  left: 5px;
+}
+
+.logout-icon::before,
+.logout-icon::after {
+  content: '';
+  position: absolute;
+  background-color: currentColor;
+}
+
+.logout-icon::before {
+  top: 3px;
+  left: 6px;
+  width: 8px;
+  height: 8px;
+  border: 2px solid currentColor;
+  border-radius: 2px;
+}
+
+.logout-icon::after {
+  top: 8px;
+  right: 2px;
+  width: 6px;
+  height: 2px;
+}
+
 .menu-item:hover {
-  background-color: var(--bg-primary);
+  background-color: var(--nav-link-hover-bg);
+  color: var(--nav-link-hover-text-color);
 }
 
 .menu-item:hover .menu-icon {
@@ -324,56 +354,27 @@ export default {
   margin: 4px 0;
 }
 
-/* Ajustes responsive */
+/* Media queries para pantallas pequeñas */
 @media (max-width: 768px) {
-  .search-container {
-    max-width: 250px; /* Reducido de 300px a 250px */
-    margin: 0 10px; /* Reducido en pantallas más pequeñas */
-  }
-  
   .app-header {
-    height: 64px; /* Ligeramente más pequeño en móviles */
+    height: 64px; /* Ligeramente más alto en tabletas */
   }
   
   .logo-image {
-    height: 38px; /* Aumentado de 32px a 38px en tablets */
+    height: 46px; /* Más grande en tabletas */
   }
   
-  .logo-button {
+  .menu-button {
     padding: 0 0 0 12px; /* Reducido padding en tablets */
   }
 }
 
 @media (max-width: 576px) {
-  .search-container {
-    max-width: 200px; /* Establecido un ancho máximo más pequeño */
-    margin: 0 8px;
-    height: 36px; /* Reducido de 40px a 36px */
-  }
-  
-  .search-input {
-    height: 36px; /* Reducido de 40px a 36px */
-    font-size: 0.9rem; /* Texto más pequeño */
-    padding: 0 36px 0 12px; /* Padding reducido */
-    border-radius: 18px; /* Ajustado para mantener proporciones */
-  }
-  
-  .search-button {
-    height: 36px; /* Reducido de 40px a 36px */
-    width: 36px; /* Reducido de 40px a 36px */
-    right: 8px; /* Ajustado posición */
-  }
-  
-  .search-icon {
-    width: 16px; /* Reducido de 18px a 16px */
-    height: 16px; /* Reducido de 18px a 16px */
-  }
-  
   .logo-image {
-    height: 36px; /* Aumentado de 32px a 36px en móviles */
+    height: 44px; /* Más grande en móviles */
   }
   
-  .logo-button {
+  .menu-button {
     padding: 0 0 0 10px; /* Reducido padding en móviles */
   }
   
@@ -389,39 +390,19 @@ export default {
   .header-container {
     padding: 0 8px 0 0; /* Reducido en móviles */
   }
+  
+  .hide-on-mobile {
+    display: none;
+  }
 }
 
 /* Añadir media query para pantallas muy pequeñas */
 @media (max-width: 400px) {
-  .search-container {
-    max-width: 140px; /* Reducido de 160px a 140px */
-    height: 32px; /* Aún más pequeño */
-    margin: 0 6px;
-  }
-  
-  .search-input {
-    height: 32px; /* Aún más pequeño */
-    font-size: 0.85rem;
-    padding: 0 32px 0 10px;
-    border-radius: 16px;
-  }
-  
-  .search-button {
-    height: 32px;
-    width: 32px;
-    right: 6px;
-  }
-  
-  .search-icon {
-    width: 14px;
-    height: 14px;
-  }
-  
   .logo-image {
-    height: 34px; /* Ajustado para pantallas muy pequeñas */
+    height: 42px; /* Ajustado para pantallas muy pequeñas */
   }
   
-  .logo-button {
+  .menu-button {
     padding: 0 0 0 8px; /* Reducido padding en pantallas muy pequeñas */
   }
 }
