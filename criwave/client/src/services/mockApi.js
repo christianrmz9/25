@@ -4,46 +4,34 @@
  */
 
 // Generar datos aleatorios para gráficos
-function generateRandomData(count, min, max, growth = false) {
+function generateRandomData(count, min, max, isIncremental = false) {
   const data = [];
-  let lastValue = Math.floor(Math.random() * (max - min) + min);
+  let lastValue = Math.floor(Math.random() * (max - min)) + min;
   
   for (let i = 0; i < count; i++) {
-    if (growth) {
-      // Para tendencia de crecimiento
-      const change = Math.random() * 0.2 - 0.05; // -5% a +15%
-      lastValue = Math.max(min, lastValue * (1 + change));
+    if (isIncremental) {
+      // Variación del 5-15% arriba o abajo
+      const variation = lastValue * (0.05 + Math.random() * 0.1) * (Math.random() > 0.5 ? 1 : -1);
+      lastValue = Math.max(min, Math.min(max, lastValue + variation));
+      data.push(Math.floor(lastValue));
     } else {
-      // Totalmente aleatorio
-      lastValue = Math.floor(Math.random() * (max - min) + min);
+      data.push(Math.floor(Math.random() * (max - min)) + min);
     }
-    
-    data.push(Math.floor(lastValue));
   }
   
   return data;
 }
 
-// Generar datos del año anterior (ligeramente inferiores)
-function generatePreviousYearData(currentYearData) {
-  return currentYearData.map(value => {
-    // Valores del año anterior son entre 10% y 30% más bajos
-    const decreaseFactor = 0.7 + (Math.random() * 0.2); // Entre 0.7 y 0.9
-    return Math.floor(value * decreaseFactor);
-  });
-}
-
 // Generar etiquetas de días para gráficos
 function generateDayLabels(count) {
-  const days = ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'];
+  const days = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'];
   const today = new Date();
   const labels = [];
   
   for (let i = count - 1; i >= 0; i--) {
     const date = new Date(today);
     date.setDate(today.getDate() - i);
-    const dayName = days[date.getDay()];
-    labels.push(`${dayName} ${date.getDate()}`);
+    labels.push(days[date.getDay()]);
   }
   
   return labels;
@@ -90,30 +78,22 @@ function generateDashboardData() {
   const ventasSemanalesValues = generateRandomData(4, 50000, 80000, true);
   const ventasMensualesValues = generateRandomData(6, 200000, 350000, true);
   
-  // Generar valores del año anterior
-  const ventasDiariasAnterior = generatePreviousYearData(ventasDiariasValues);
-  const ventasSemanalesAnterior = generatePreviousYearData(ventasSemanalesValues);
-  const ventasMensualesAnterior = generatePreviousYearData(ventasMensualesValues);
-  
   // Ventas diarias (últimos 7 días)
   const ventasDiarias = {
     labels: generateDayLabels(7),
-    values: ventasDiariasValues,
-    previousYearValues: ventasDiariasAnterior
+    values: ventasDiariasValues
   };
   
   // Ventas semanales (últimas 4 semanas)
   const ventasSemanales = {
     labels: generateWeekLabels(4),
-    values: ventasSemanalesValues,
-    previousYearValues: ventasSemanalesAnterior
+    values: ventasSemanalesValues
   };
   
   // Ventas mensuales (últimos 6 meses)
   const ventasMensuales = {
     labels: generateMonthLabels(6),
-    values: ventasMensualesValues,
-    previousYearValues: ventasMensualesAnterior
+    values: ventasMensualesValues
   };
   
   // KPIs principales

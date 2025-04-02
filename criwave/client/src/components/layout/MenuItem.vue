@@ -219,11 +219,11 @@ export default {
   display: flex;
   align-items: center;
   padding: 0.55rem 1rem;
-  color: var(--text-primary);
   text-decoration: none;
   transition: all 0.2s ease;
   position: relative;
   border-left: 3px solid transparent;
+  color: var(--text-primary);
 }
 
 /* Efectos hover - Estos son los estilos principales para la interactividad */
@@ -265,6 +265,7 @@ export default {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  transition: color 0.2s ease;
 }
 
 .nav-badge {
@@ -383,5 +384,38 @@ export default {
 
 .section-header {
   margin-top: 0.5rem;
+}
+
+/* Modo oscuro */
+:root[data-theme='dark'] {
+  .nav-link,
+  .nav-text,
+  .menu-item a {
+    color: rgba(255, 255, 255, 0.6) !important;
+  }
+
+  .nav-link:hover,
+  .nav-text:hover,
+  .menu-item a:hover {
+    color: rgba(255, 255, 255, 0.9) !important;
+  }
+
+  .nav-link.active,
+  .nav-text.active,
+  .menu-item a.active {
+    color: rgba(255, 255, 255, 1) !important;
+  }
+
+  .nav-icon {
+    color: rgba(255, 255, 255, 0.6) !important;
+  }
+
+  .nav-link:hover .nav-icon {
+    color: rgba(255, 255, 255, 0.9) !important;
+  }
+
+  .section-title {
+    color: rgba(255, 255, 255, 0.4) !important;
+  }
 }
 </style> 

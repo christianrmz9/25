@@ -25,7 +25,7 @@
       >
         <icon name="close" size="sm" />
       </button>
-      <kbd class="keyboard-shortcut" v-if="!isFocused && !searchQuery">Ctrl+K</kbd>
+      <kbd class="keyboard-shortcut" v-if="!isFocused && !searchQuery && !isMobile">Ctrl+K</kbd>
     </div>
   </div>
 </template>
@@ -38,7 +38,7 @@
  * - Soporte para historial de búsquedas recientes
  * - Sugerencias personalizables
  * - Navegación con teclado
- * - Atajo de teclado Ctrl+K
+ * - Atajo de teclado Ctrl+K (solo en escritorio)
  * 
  * @component SearchBar
  */
@@ -98,6 +98,12 @@ export default {
     const isFocused = ref(false);
     const suggestionsContainer = ref(null);
     const recentSearches = ref([]);
+    const isMobile = ref(window.innerWidth <= 768);
+    
+    // Detectar cambios en el tamaño de la ventana
+    const handleResize = () => {
+      isMobile.value = window.innerWidth <= 768;
+    };
     
     // Cargar búsquedas recientes del localStorage
     const loadRecentSearches = () => {
@@ -195,10 +201,12 @@ export default {
     onMounted(() => {
       loadRecentSearches();
       document.addEventListener('click', handleDocumentClick);
+      window.addEventListener('resize', handleResize);
     });
     
     onBeforeUnmount(() => {
       document.removeEventListener('click', handleDocumentClick);
+      window.removeEventListener('resize', handleResize);
     });
     
     return {
@@ -213,6 +221,7 @@ export default {
       clearSearch,
       applyRecentSearch,
       removeRecentSearch,
+      isMobile,
     };
   },
 };

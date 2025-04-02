@@ -20,14 +20,6 @@
               {{ formatCurrency(getAverageSales(data.values)) }}
               <span class="chart-label">Promedio</span>
             </div>
-            
-            <!-- Opción para comparar con año anterior -->
-            <div class="chart-comparison" v-if="showComparison">
-              <label class="comparison-toggle">
-                <input type="checkbox" v-model="compareWithPreviousYear">
-                <span class="toggle-label">Comparar con año anterior</span>
-              </label>
-            </div>
           </div>
           
           <div class="chart-bars">
@@ -42,23 +34,6 @@
               ></div>
               <div class="chart-bar-label">{{ data.labels[index] }}</div>
               <div class="chart-bar-value">{{ formatCurrency(value) }}</div>
-            </div>
-          </div>
-          
-          <!-- Línea para el año anterior (morada) -->
-          <div v-if="compareWithPreviousYear && data.previousYearValues" class="chart-previous-year">
-            <svg class="previous-year-line" :viewBox="`0 0 ${data.values.length * 100} 100`" preserveAspectRatio="none">
-              <polyline 
-                :points="generatePreviousYearPoints(data.previousYearValues, data.values)" 
-                fill="none" 
-                stroke="var(--previous-year-color, #9333ea)" 
-                stroke-width="2" 
-                stroke-dasharray="5,5"
-              />
-            </svg>
-            <div class="previous-year-legend">
-              <span class="legend-color" style="background-color: var(--previous-year-color, #9333ea);"></span>
-              <span class="legend-label">Año anterior</span>
             </div>
           </div>
         </div>
@@ -117,21 +92,7 @@ export default {
     refreshInterval: {
       type: Number,
       default: 60000 // 1 minuto
-    },
-    
-    /**
-     * Si se debe mostrar la opción de comparar con año anterior
-     */
-    showComparison: {
-      type: Boolean,
-      default: true
     }
-  },
-  
-  data() {
-    return {
-      compareWithPreviousYear: true
-    };
   },
   
   methods: {
@@ -174,26 +135,6 @@ export default {
     getAverageSales(values) {
       if (!values || !values.length) return 0;
       return this.getTotalSales(values) / values.length;
-    },
-    
-    /**
-     * Generar puntos para la línea del año anterior
-     */
-    generatePreviousYearPoints(previousValues, currentValues) {
-      if (!previousValues || !previousValues.length || !currentValues || !currentValues.length) {
-        return '';
-      }
-      
-      const maxCurrentValue = Math.max(...currentValues);
-      const points = [];
-      
-      for (let i = 0; i < previousValues.length; i++) {
-        const x = i * 100 + 50; // Centrar en cada barra
-        const y = 100 - ((previousValues[i] / maxCurrentValue) * 100); // Invertir el eje Y
-        points.push(`${x},${y}`);
-      }
-      
-      return points.join(' ');
     }
   }
 };
@@ -238,27 +179,6 @@ export default {
   margin-top: 2px;
 }
 
-.chart-comparison {
-  display: flex;
-  align-items: center;
-}
-
-.comparison-toggle {
-  display: flex;
-  align-items: center;
-  cursor: pointer;
-  user-select: none;
-}
-
-.comparison-toggle input {
-  margin-right: 8px;
-}
-
-.toggle-label {
-  font-size: 0.85rem;
-  color: var(--text-secondary);
-}
-
 .chart-bars {
   display: flex;
   justify-content: space-between;
@@ -297,51 +217,6 @@ export default {
   font-size: 0.7rem;
   font-weight: 600;
   color: var(--text-primary);
-}
-
-/* Estilos para la línea del año anterior */
-.chart-previous-year {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  z-index: 1;
-  pointer-events: none;
-}
-
-.previous-year-line {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: calc(100% - 80px); /* Ajustar para no cubrir las etiquetas */
-  margin-top: 20px; /* Espacio para el encabezado del gráfico */
-}
-
-.previous-year-legend {
-  position: absolute;
-  top: 0;
-  right: 0;
-  display: flex;
-  align-items: center;
-  font-size: 0.75rem;
-  color: var(--text-secondary);
-  padding: 4px 8px;
-  background-color: var(--bg-secondary, #f5f5f5);
-  border-radius: 4px;
-}
-
-.legend-color {
-  display: inline-block;
-  width: 12px;
-  height: 2px;
-  margin-right: 6px;
-  background-color: var(--previous-year-color, #9333ea);
-}
-
-.legend-label {
-  font-size: 0.7rem;
 }
 
 @media (max-width: 768px) {

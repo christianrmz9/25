@@ -4,7 +4,10 @@
     <material-icons-loader />
     
     <!-- Header -->
-    <app-header @toggle-sidebar="toggleSidebar" />
+    <app-header 
+      @toggle-sidebar="toggleSidebar"
+      :isSidebarOpen="isSidebarOpen"
+    />
     
     <!-- Sidebar -->
     <app-sidebar :isOpen="isSidebarOpen" @close="closeSidebar" />
@@ -52,11 +55,13 @@ export default {
     // Alterna la visibilidad del sidebar
     const toggleSidebar = () => {
       isSidebarOpen.value = !isSidebarOpen.value;
+      document.documentElement.setAttribute('data-sidebar-open', isSidebarOpen.value);
     };
     
     // Cierra el sidebar
     const closeSidebar = () => {
       isSidebarOpen.value = false;
+      document.documentElement.setAttribute('data-sidebar-open', 'false');
     };
     
     // Maneja el cambio de tamaño de la ventana
@@ -69,6 +74,9 @@ export default {
     onMounted(() => {
       // Inicializar el tema
       store.dispatch('theme/initTheme');
+      
+      // Inicializar el estado del sidebar
+      document.documentElement.setAttribute('data-sidebar-open', 'false');
       
       // Cerrar el sidebar al cambiar el tamaño de la ventana
       window.addEventListener('resize', handleResize);

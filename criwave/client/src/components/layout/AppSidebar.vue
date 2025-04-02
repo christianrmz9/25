@@ -22,7 +22,7 @@
         <img :src="logoSrc" alt="Leadwave" class="sidebar-logo" />
       </div>
       <button class="close-button" @click="closeSidebar" aria-label="Cerrar menú">
-        ×
+        <X size="20" />
       </button>
     </div>
     
@@ -142,7 +142,7 @@ import SearchBar from '../ui/SearchBar.vue';
 import MenuItem from './MenuItem.vue';
 import { navigationConfig } from '../../config/navigation';
 import { setupMenuListeners } from './MenuListeners';
-import { Heart } from 'lucide-vue-next';
+import { Heart, X } from 'lucide-vue-next';
 
 export default {
   name: 'AppSidebar',
@@ -150,7 +150,8 @@ export default {
   components: {
     SearchBar,
     MenuItem,
-    Heart
+    Heart,
+    X
   },
   
   props: {
@@ -193,7 +194,7 @@ export default {
     
     // Determina la imagen del logo según el tema actual
     const logoSrc = computed(() => {
-      return store.getters['theme/isDark'] ? '/img/Wblanco.png' : '/img/Wnegro.png';
+      return store.getters['theme/isDark'] ? '/img/criwavelogo.png' : '/img/criwavelogoN.png';
     });
     
     // Aplanar la estructura jerárquica de elementos de navegación para la búsqueda
@@ -654,51 +655,39 @@ export default {
   bottom: 0;
   background-color: rgba(0, 0, 0, 0.5);
   z-index: 999;
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .sidebar-overlay {
+    display: block;
+  }
 }
 
 /* Estilos del sidebar */
 .app-sidebar {
   position: fixed;
   top: 0;
-  left: -280px; /* Oculto por defecto */
+  left: 0;
+  bottom: 0;
   width: 280px;
-  height: 100vh;
   background-color: var(--sidebar-bg);
   z-index: 1000;
-  transition: left 0.3s ease;
-  display: flex;
-  flex-direction: column;
-  overflow-y: auto;
-  color: var(--sidebar-text);
-  scrollbar-width: thin;
-  scrollbar-color: rgba(255, 255, 255, 0.2) rgba(0, 0, 0, 0.2);
-  box-shadow: var(--card-shadow);
+  transform: translateX(-100%);
+  transition: transform 0.3s ease;
+  box-shadow: var(--sidebar-shadow);
 }
 
-/* Personalización de la barra de desplazamiento para WebKit (Chrome, Safari, etc.) */
-.app-sidebar::-webkit-scrollbar {
-  width: 8px;
-}
-
-.app-sidebar::-webkit-scrollbar-track {
-  background: var(--scrollbar-track);
-  border-radius: 4px;
-}
-
-.app-sidebar::-webkit-scrollbar-thumb {
-  background-color: var(--scrollbar-thumb);
-  border-radius: 4px;
-  opacity: 0.7;
-}
-
-.app-sidebar::-webkit-scrollbar-thumb:hover {
-  background-color: var(--scrollbar-thumb-hover);
-  opacity: 1;
-}
-
-/* Cuando está abierto */
 .app-sidebar.is-open {
-  left: 0;
+  transform: translateX(0);
+}
+
+/* En pantallas grandes, cuando está abierto */
+@media (min-width: 769px) {
+  .app-sidebar {
+    transform: none;
+    box-shadow: var(--sidebar-shadow);
+  }
 }
 
 /* Cabecera del sidebar */
@@ -706,9 +695,11 @@ export default {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 1.25rem 1rem 0.75rem;
+  padding: 1rem 1rem;
   border-bottom: none;
   background-color: var(--bg-secondary);
+  position: relative;
+  width: 100%;
 }
 
 .logo-container {
@@ -716,14 +707,16 @@ export default {
   align-items: center;
   justify-content: center;
   flex: 1;
+  padding-right: 36px;
+  margin-left: 8px; /* Añadido para centrar mejor */
 }
 
 .sidebar-logo {
-  width: 54px;
-  height: 54px;
-  object-fit: contain;
-  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
-  transition: transform 0.3s ease;
+  height: 36px; /* Aumentado de 32px a 36px */
+  width: auto;
+  transition: transform 0.2s ease;
+  display: block; /* Asegura mejor comportamiento del centrado */
+  margin: 0 auto; /* Ayuda al centrado */
 }
 
 .sidebar-logo:hover {
@@ -734,20 +727,28 @@ export default {
 .close-button {
   background: none;
   border: none;
-  color: var(--text-secondary);
+  color: var(--text-primary);
+  opacity: 0.7;
   cursor: pointer;
+  padding: 8px;
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 28px;
-  height: 28px;
-  border-radius: 50%;
-  transition: background-color 0.2s;
-  position: relative;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+  position: absolute;
+  right: 8px; /* Ajustado de 12px a 8px */
+  top: 50%;
+  transform: translateY(-50%);
 }
 
 .close-button:hover {
-  background-color: var(--bg-primary);
+  opacity: 1;
+  background-color: var(--bg-hover);
+}
+
+.close-button:active {
+  transform: translateY(-50%) scale(0.95);
 }
 
 /* Estilos base para todos los enlaces del menú */
@@ -1415,5 +1416,106 @@ export default {
 
 .nav-section-frequents .nav-link:hover .nav-icon {
   opacity: 1;
+}
+
+/* Ajuste del color del texto para el menú lateral en modo oscuro */
+:root[data-theme='dark'] .nav-text {
+  color: rgba(255, 255, 255, 0.6); /* Gris más oscuro para todos los textos */
+}
+
+:root[data-theme='dark'] .nav-link:hover .nav-text {
+  color: rgba(255, 255, 255, 0.9); /* Más claro al hacer hover */
+}
+
+:root[data-theme='dark'] .nav-link.active .nav-text {
+  color: rgba(255, 255, 255, 1); /* Blanco completo cuando está activo */
+}
+
+/* Mantener el color original para el modo claro */
+:root:not([data-theme='dark']) .nav-text {
+  color: rgba(0, 0, 0, 0.8);
+}
+
+:root:not([data-theme='dark']) .nav-link:hover .nav-text {
+  color: rgba(0, 0, 0, 0.95);
+}
+
+:root:not([data-theme='dark']) .nav-link.active .nav-text {
+  color: rgba(0, 0, 0, 1);
+}
+
+/* Ajuste para los títulos de sección */
+:root[data-theme='dark'] .section-title {
+  color: rgba(255, 255, 255, 0.4); /* Gris más oscuro para los títulos */
+}
+
+/* Modo oscuro - Ajuste global para todos los elementos del menú */
+:root[data-theme='dark'] {
+  /* Color base para todos los elementos del menú */
+  .nav-link,
+  .nav-text,
+  .nav-item a,
+  .nav-section a,
+  .nav-section-frequents a {
+    color: rgba(255, 255, 255, 0.6) !important;
+  }
+
+  /* Hover para todos los elementos */
+  .nav-link:hover,
+  .nav-text:hover,
+  .nav-item a:hover,
+  .nav-section a:hover,
+  .nav-section-frequents a:hover {
+    color: rgba(255, 255, 255, 0.9) !important;
+  }
+
+  /* Elementos activos */
+  .nav-link.active,
+  .nav-text.active,
+  .nav-item a.active,
+  .nav-section a.active,
+  .nav-section-frequents a.active {
+    color: rgba(255, 255, 255, 1) !important;
+  }
+
+  /* Títulos de sección */
+  .section-title {
+    color: rgba(255, 255, 255, 0.4) !important;
+  }
+
+  /* Íconos */
+  .nav-icon {
+    color: rgba(255, 255, 255, 0.6) !important;
+  }
+
+  /* Indicadores de padre/subtítulos */
+  .parent-indicator,
+  .item-parent {
+    color: rgba(255, 255, 255, 0.4) !important;
+  }
+}
+
+/* Modo claro - mantener los colores originales */
+:root:not([data-theme='dark']) {
+  .nav-link,
+  .nav-text,
+  .nav-item a,
+  .nav-section a {
+    color: rgba(0, 0, 0, 0.8);
+  }
+
+  .nav-link:hover,
+  .nav-text:hover,
+  .nav-item a:hover,
+  .nav-section a:hover {
+    color: rgba(0, 0, 0, 0.95);
+  }
+
+  .nav-link.active,
+  .nav-text.active,
+  .nav-item a.active,
+  .nav-section a.active {
+    color: rgba(0, 0, 0, 1);
+  }
 }
 </style> 

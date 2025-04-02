@@ -5,7 +5,13 @@
         <!-- Grupo del logo -->
         <div class="header-left">
           <!-- Botón de menú con logo -->
-          <button class="menu-button" @click="toggleSidebar" aria-label="Abrir menú lateral">
+          <button 
+            class="menu-button" 
+            @click="toggleSidebar" 
+            aria-label="Abrir menú lateral"
+            :class="{ 'hide-on-sidebar-open': isSidebarOpen }"
+            :disabled="isSidebarOpen"
+          >
             <img 
               :src="logoSrc" 
               alt="Leadwave" 
@@ -70,6 +76,14 @@ export default {
   
   components: {
     ThemeToggle
+  },
+  
+  props: {
+    // Añadir prop para saber si el sidebar está abierto
+    isSidebarOpen: {
+      type: Boolean,
+      default: false
+    }
   },
   
   setup() {
@@ -143,13 +157,20 @@ export default {
   background-color: var(--header-bg);
   position: fixed;
   top: 0;
-  left: 0;
   right: 0;
-  height: 56px; /* Altura ajustada como en la imagen */
-  z-index: 1000;
+  height: 56px;
+  z-index: 100; /* Ajustado para estar por debajo del sidebar */
   color: var(--header-text);
-  border-bottom: none; /* Eliminado el borde inferior */
   box-shadow: var(--card-shadow);
+  transition: left 0.3s ease; /* Añadida transición suave */
+  left: 0;
+}
+
+/* Ajuste cuando el sidebar está abierto en pantallas grandes */
+@media (min-width: 769px) {
+  :root[data-sidebar-open='true'] .app-header {
+    left: 280px; /* Se mueve junto con el contenido cuando el sidebar está abierto */
+  }
 }
 
 .header-container {
@@ -404,6 +425,16 @@ export default {
   
   .menu-button {
     padding: 0 0 0 8px; /* Reducido padding en pantallas muy pequeñas */
+  }
+}
+
+/* Ocultar y deshabilitar botón cuando el sidebar está abierto en pantallas grandes */
+@media (min-width: 769px) {
+  .hide-on-sidebar-open {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none; /* Deshabilita la interacción */
+    transition: opacity 0.3s ease, visibility 0.3s ease;
   }
 }
 </style> 

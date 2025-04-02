@@ -38,19 +38,14 @@
         comparison-period="mes anterior"
       />
     </div>
-    
-    <!-- Gráfico de ingresos de los últimos 12 meses -->
+
+    <!-- Gráfico de ingresos -->
     <div class="revenue-chart-section">
-      <revenue-chart
-        :revenue-data="revenueData"
-        :historical-data="historicalRevenueData"
-        :change-percent="revenueChangePercent"
-        :change-amount="revenueChangeAmount"
-        :auto-generate-historical="true"
-        :default-show-comparison="showRevenueComparison"
-        @comparison-changed="showRevenueComparison = $event"
-        class="dashboard-item revenue-chart"
-      />
+      <revenue-chart />
+    </div>
+
+    <div class="dashboard-grid">
+      <DateRangeChart />
     </div>
   </div>
 </template>
@@ -66,16 +61,17 @@
  */
 import SalesCard from './SalesCard.vue';
 import RevenueChart from './RevenueChart.vue';
+import DateRangeChart from './DateRangeChart.vue'
 // Importar los servicios
 import { getDailySales, getWeeklySales, getMonthlySales } from '../../services/dashboardService';
-import revenueService from '../../services/revenueService';
 
 export default {
   name: 'AppDashboard',
   
   components: {
     SalesCard,
-    RevenueChart
+    RevenueChart,
+    DateRangeChart
   },
   
   data() {
@@ -104,13 +100,6 @@ export default {
         change: 0,
         changeAmount: 0
       },
-      // Datos para el gráfico de ingresos
-      revenueData: [],
-      historicalRevenueData: [],
-      revenueChangePercent: 0,
-      revenueChangeAmount: 0,
-      isLoadingRevenue: false,
-      showRevenueComparison: false,
       isLoading: true,
       error: null
     };
@@ -163,31 +152,12 @@ export default {
         this.error = 'No se pudieron cargar los datos. Por favor, intenta de nuevo más tarde.';
         this.isLoading = false;
       }
-    },
-
-    async loadRevenueData() {
-      this.isLoadingRevenue = true;
-      try {
-        const { current, historical, changePercent, changeAmount } = await revenueService.getRevenueData({
-          includeHistorical: true
-        });
-        
-        this.revenueData = current;
-        this.historicalRevenueData = historical;
-        this.revenueChangePercent = changePercent;
-        this.revenueChangeAmount = changeAmount;
-      } catch (error) {
-        console.error('Error al cargar los datos de ingresos:', error);
-      } finally {
-        this.isLoadingRevenue = false;
-      }
     }
   },
   
   mounted() {
     // Cargar datos al montar el componente
     this.loadDashboardData();
-    this.loadRevenueData();
   }
 };
 </script>
@@ -214,8 +184,9 @@ export default {
   perspective: 1000px;
 }
 
-/* Sección de gráfico de ingresos */
+/* Sección del gráfico de ingresos */
 .revenue-chart-section {
+  margin-top: 30px;
   margin-bottom: 30px;
 }
 
@@ -278,6 +249,24 @@ export default {
   .loading-spinner {
     width: 32px;
     height: 32px;
+  }
+}
+
+.dashboard {
+  padding: 20px;
+}
+
+.dashboard-grid {
+  display: grid;
+  gap: 20px;
+  grid-template-columns: 1fr;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+@media (min-width: 768px) {
+  .dashboard-grid {
+    grid-template-columns: repeat(1, 1fr);
   }
 }
 </style> 
